@@ -1,5 +1,6 @@
 # ansible-backup-env
 一键部署备份环境
+
 实时备份，在运维工作中属于家常便饭，也是企业运作稳定的保障（数据的冗余非常重要）。我们规划的实时备份体系，是每个节点都监听/backup目录，当用户把备份的内容放入该目录后，则会实时同步到备份服务器上。 建立这套体系，技术选型如下：
 - rsync 同步服务，选择守护进程模式；
 - sersync 开源的实时同步工具；
@@ -8,12 +9,17 @@
 # 规划
 - 用户
 rsync uid:801
+
 - 目录
+
 1）/scripts 所有脚本存放的目录；
+
 2）/backup 备份存放的目录，也是实时同步监听的目录；
+
 
 #环境准备
 1）中控机上安装好Ansible工具；
+
 2）中控机与各服务器之间已建立好SSH的无密码认证；
 
 # ansible目录结构
@@ -34,9 +40,13 @@ rsync uid:801
 └── tools # 工具包
     └── sersync.running.tar.gz
 ```
+
 # 部署步骤
+
 1）把ansible目录下载并覆盖到中控机的/etc/ansible；
+
 2）修改 /etc/ansbile/hosts 的主机列表，根据实际情况修改IP；
+
 3）运行ansbile命令；
 ```
 ansible-playbook /etc/ansible/tasks/01.prepare.yaml -f 2
