@@ -1,0 +1,29 @@
+- hosts: backup
+  tasks:
+  - name: cp file
+    copy: src={{item.src}} dest={{item.dest}}
+    with_items:
+        - {src: '/etc/ansible/templates/rsyncd.conf' ,dest: '/etc/rsyncd.conf'}
+        - {src: '/etc/ansible/templates/rsync.password' ,dest: '/etc/rsync.password'}
+        - {src: '/etc/ansible/templates/rsync_server.sh' ,dest: '/scripts/rsync_server.sh'}
+
+  - name: install rsync server
+    shell: /bin/sh /scripts/rsync_server.sh
+
+- hosts: backup-node
+  tasks:
+  - name: install rsync client
+    shell: /bin/echo 'alys114'>/etc/rsync.password && /bin/chmod 600 /etc/rsync.password
+
+  - name: cp sersync
+    copy: src=/etc/ansible/tools/sersync.running.tar.gz dest=/application/sersync.running.tar.gz
+
+  - name: uzip sersync
+    shell: /bin/tar xzf /application/sersync.running.tar.gz chdir=/application
+
+  - name: run sersync   
+    command:  /application/sersync/bin/sersync2 -dro /application/sersync/conf/confxml.xml 
+
+  - name: sersync boot     
+    shell: /bin/echo '/application/sersync/bin/sersync2 -dro /application/sersync/conf/confxml.xml'>>/etc/rc.local
+
